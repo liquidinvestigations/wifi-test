@@ -28,11 +28,8 @@ def start_AP(xprocess):
     """
 
     class Starter(ProcessStarter):
-        """
-        TODO: we need to bring this config file with us. Currently this will only be
-              successful if run from /Test
-        """
-        args = ['sudo', 'hostapd', os.getcwd() + '/conf_hostapd/test_conf_supplicant.hostapd.conf']
+        test_dir = os.path.dirname(__file__)
+        args = ['sudo', 'hostapd', os.path.join(test_dir, 'conf_hostapd/test_conf_supplicant.hostapd.conf')]
         pattern = "wlan0: AP-ENABLED"
 
     xprocess.ensure("AP", Starter)
