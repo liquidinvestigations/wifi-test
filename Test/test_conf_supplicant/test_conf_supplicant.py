@@ -35,13 +35,9 @@ def start_AP(xprocess):
         args = ['sudo', 'hostapd', os.getcwd() + '/conf_hostapd/test_conf_supplicant.hostapd.conf']
         pattern = "wlan0: AP-ENABLED"
 
-    logfile = xprocess.ensure("AP", Starter)
+    xprocess.ensure("AP", Starter)
     print("Started AP...")
     return True
-
-@pytest.fixture
-def supplicant_interface():
-    pass
 
 def test_conf_supplicant(modprobe_hwsim, start_AP):
     """
