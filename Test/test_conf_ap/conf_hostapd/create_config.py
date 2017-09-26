@@ -12,8 +12,8 @@ def create_hostapd_conf(ssid, password, interface):
     Overwrites the current config file.
 
     """
-    subprocess.call(['touch', './test_conf_supplicant.hostapd.conf'])
-    conf = HostapdConf('./test_conf_supplicant.hostapd.conf')
+    subprocess.call(['touch', './hostapd.conf'])
+    conf = HostapdConf('./hostapd.conf')
 
     # set some common options
     ha.set_ssid(conf, ssid)

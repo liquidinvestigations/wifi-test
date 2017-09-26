@@ -50,10 +50,12 @@ Vagrant.configure(2) do |config|
 
     # install system dependencies
     sudo apt-get update
+
     echo "Installing git, pip3..."
     sudo apt-get install -y git python3-pip
-    echo "Installing hostapd, wpasupplicant, iw..."
-    sudo apt-get install -y iw hostapd wpasupplicant wireless-tools
+
+    echo "Installing hostapd, wpasupplicant, wireless-tools..."
+    sudo apt-get install -y hostapd wpasupplicant wireless-tools iw
     sudo pip3 install virtualenv
 
     # Create python3 virtualenv in dev root

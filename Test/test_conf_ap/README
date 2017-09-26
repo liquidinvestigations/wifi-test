@@ -1,0 +1,76 @@
+Here's basic proof of wifi setup, using mac80211_hwsim. Demonstrates
+setting up an ap via hostapd (and the provided hostapd.conf), as well as connecting
+to it via wpa_supplicant (using the provided wpa_supplicant.conf).
+
+NOTE: the hostapd.conf sets the locale to RO. see conf_hostapd/ for a python
+hostapd configuration module.
+
+NOTE: this doesn't include any dhcp setup, that will be handled
+elsewhere. this just proves that the hostapd.conf and wpa_supplicant.conf work
+as expected
+
+NOTE: to finalize the supplicant configuration for production we will need to
+update /etc/network/interfaces to contain something like this:
+
+auto wlan0
+iface wlan0 inet dhcp
+  wpa-conf /etc/wpa_supplicant.conf
+
+you can use pytest for verification (test output follows):
+
+test_conf_ap.py Installing mac80211_hwsim module...
+Started AP...
+Started supplicant...
+TODO: verify connection via iw
+.Uninstalling mac80211_hwsim module...
+
+you can run manually as follows:
+
+In terminal 1:
+
+# modprobe mac80211_hwsim
+# hostapd ./conf_hostapd/hostapd.conf
+
+Configuration file: ./conf_hostapd/hostapd.conf
+wlan0: interface state UNINITIALIZED->COUNTRY_UPDATE
+Using interface wlan0 with hwaddr 02:00:00:00:00:00 and ssid "test_conf_supplicant"
+wlan0: interface state COUNTRY_UPDATE->ENABLED
+wlan0: AP-ENABLED
+
+In terminal 2:
+
+# wpa_supplicant -i wlan1 -c ./conf_supplicant/wpa_supplicant.conf
+Successfully initialized wpa_supplicant
+wlan1: SME: Trying to authenticate with 02:00:00:00:00:00 (SSID='test_conf_supplicant' freq=2417 MHz)
+wlan1: Trying to associate with 02:00:00:00:00:00 (SSID='test_conf_supplicant' freq=2417 MHz)
+wlan1: Associated with 02:00:00:00:00:00
+wlan1: WPA: Key negotiation completed with 02:00:00:00:00:00 [PTK=CCMP GTK=CCMP]
+wlan1: CTRL-EVENT-CONNECTED - Connection to 02:00:00:00:00:00 completed [id=0 id_str=]
+
+In terminal 3:
+NOTE: here we are looking specifically for the 'Unnamed/non-netdev interface' for
+phy#1 and for 'type AP' for phy#0
+
+# iw dev
+phy#1
+	Unnamed/non-netdev interface
+		wdev 0x100000004
+		addr 42:00:00:00:01:00
+		type P2P-device
+		txpower 20.00 dBm
+	Interface wlan1
+		ifindex 55
+		wdev 0x100000001
+		addr 02:00:00:00:01:00
+		type managed
+		channel 2 (2417 MHz), width: 20 MHz (no HT), center1: 2417 MHz
+		txpower 20.00 dBm
+phy#0
+	Interface wlan0
+		ifindex 54
+		wdev 0x1
+		addr 02:00:00:00:00:00
+		ssid test_conf_supplicant
+		type AP
+		channel 2 (2417 MHz), width: 20 MHz (no HT), center1: 2417 MHz
+		txpower 20.00 dBm
